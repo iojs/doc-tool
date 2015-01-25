@@ -106,7 +106,7 @@ function render(lexed, filename, template, cb) {
 
     // content has to be the last thing we do with
     // the lexed tokens, because it's destructive.
-    content = marked.parser(lexed);
+    var content = marked.parser(lexed);
     template = template.replace(/__CONTENT__/g, content);
 
     cb(null, template);
