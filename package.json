@@ -6,10 +6,15 @@
   "engines": {
     "node": ">=0.6.10"
   },
+  "scripts": {
+    "test": "lab -v"
+  },
   "dependencies": {
     "marked": "~0.1.9"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "lab": "~5.2.1"
+  },
   "optionalDependencies": {},
   "bin": "./generate.js"
 }
