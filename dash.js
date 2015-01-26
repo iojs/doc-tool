@@ -8,8 +8,8 @@
  * usage:
  *
  *  $ iojs dash.js $(find out/doc/api/*.json)
- *  $ cp -R  io.js/out/doc/api/* IOJS.docset/Contents/Resources/Documents/iojs.org/api
- *  $ tar --exclude='.DS_Store' -cvzf IOJS.tgz IOJS.docset
+ *  $ cp -R  io.js/out/doc/api/* iojs.docset/Contents/Resources/Documents/iojs.org/api
+ *  $ tar --exclude='.DS_Store' -cvzf iojs.tgz iojs.docset
  */
 
 var Readable = require('stream').Readable;
@@ -24,12 +24,12 @@ var docSet = [
 ];
 var INSERT_TPL = 'INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ("{name}", "{type}", "{path}");';
 
-var DB_FILE = 'IOJS.docset/Contents/Resources/docSet.dsidx';
+var DB_FILE = 'iojs.docset/Contents/Resources/docSet.dsidx';
 
 var blacklist = ['*.json', '_toc.json', 'index.json', 'all.json'];
 // node types
 var types = 'globals modules classes classMethods methods vars events properties'.split(' '); // 'signatures options params';
-var idCounters = {};
+var idCounters = Object.create(null);
 var _cache = Object.create(null);
 
 // input paths of files
@@ -76,10 +76,11 @@ function generate(o, fn, g, pt, pn) {
   var anchor = o.textRaw;
   var _name;
   if (g && name) {
-  if (type === 'var') type = 'variable';
-  else if (type === 'classMethod') type = 'method';
-  else if (g === 'properties' && !pt) type = 'property';
-  //console.log(
+    if (type === 'var') type = 'variable';
+    else if (type === 'classMethod') type = 'method';
+    else if (g === 'properties' && !pt) type = 'property';
+
+    //console.log(
     insert(
     fn, _name = (
     ~['module', 'global', 'class'].indexOf(type) // ignore
@@ -148,7 +149,7 @@ function genId(text) {
   text = text.replace(/[^a-z0-9]+/g, '_');
   text = text.replace(/^_+|_+$/, '');
   text = text.replace(/^([^a-z])/, '_$1');
-  if (idCounters.hasOwnProperty(text)) {
+  if (idCounters[text]) {
     if (idCounters[text]) {
       text += '_' + idCounters[text];
     }
