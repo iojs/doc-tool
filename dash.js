@@ -28,7 +28,7 @@ var DB_FILE = 'iojs.docset/Contents/Resources/docSet.dsidx';
 
 var blacklist = ['*.json', '_toc.json', 'index.json', 'all.json'];
 // node types
-var types = 'globals modules classes classMethods methods vars events properties'.split(' '); // 'signatures options params';
+var types = 'globals miscs modules classes classMethods methods vars events properties'.split(' '); // 'signatures options params';
 var idCounters = {};
 var _cache = Object.create(null);
 
@@ -78,6 +78,7 @@ function generate(o, fn, g, pt, pn) {
   if (g && name) {
     if (type === 'var') type = 'variable';
     else if (type === 'classMethod') type = 'method';
+    else if (type === 'misc') type = 'guide';
     else if (g === 'properties' && !pt) type = 'property';
 
     //console.log(
@@ -118,11 +119,13 @@ function generate(o, fn, g, pt, pn) {
 }
 
 function insert(fn, name, type, anchor) {
+  if (name === 'module.module') return;
+  if (fn === 'globals') name = (name = name.split('.')) && name[name.length - 1];
   if (!(name && type)) return;
   if (_cache[name + type]) return;
   _cache[name + type] = 1;
   var sql = INSERT_TPL
-    .replace('{name}', name)
+    .replace('{name}', name.replace(/[\\]*/g, ''))
     .replace('{type}', camelCase(type))
     .replace('{path}', 'iojs.org/api/' + fn + '.html' + (anchor ? '#' + genId([fn, ''+anchor].join(' ')) : ''));
 
