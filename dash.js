@@ -29,7 +29,7 @@ var DB_FILE = 'iojs.docset/Contents/Resources/docSet.dsidx';
 var blacklist = ['*.json', '_toc.json', 'index.json', 'all.json'];
 // node types
 var types = 'globals modules classes classMethods methods vars events properties'.split(' '); // 'signatures options params';
-var idCounters = Object.create(null);
+var idCounters = {};
 var _cache = Object.create(null);
 
 // input paths of files
@@ -130,6 +130,7 @@ function insert(fn, name, type, anchor) {
 }
 
 function output() {
+  fs.unlinkSync(DB_FILE);
   var sqlite3  = spawn('sqlite3', [DB_FILE], { stdin: 'pipe' });
   var reader = new Readable;
   docSet.forEach(function (row) {
@@ -149,7 +150,7 @@ function genId(text) {
   text = text.replace(/[^a-z0-9]+/g, '_');
   text = text.replace(/^_+|_+$/, '');
   text = text.replace(/^([^a-z])/, '_$1');
-  if (idCounters[text]) {
+  if (idCounters.hasOwnProperty(text)) {
     if (idCounters[text]) {
       text += '_' + idCounters[text];
     }
