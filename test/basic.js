@@ -31,6 +31,7 @@ function generate(format, files, cb) {
 
   child = spawn(__dirname + '/../generate.js', [
     '--format=' + format,
+    '--gtoc=' + __dirname + '/fixtures/markdown/_toc.markdown',
     '--template=' + __dirname + '/fixtures/template.html'
   ].concat(files));
 

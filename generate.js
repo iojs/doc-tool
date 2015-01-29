@@ -32,6 +32,7 @@ var args = process.argv.slice(2);
 var format = 'json';
 var template = null;
 var inputFile = null;
+var gtocPath = null;
 
 args.forEach(function (arg) {
   if (!arg.match(/^\-\-/)) {
@@ -40,6 +41,8 @@ args.forEach(function (arg) {
     format = arg.replace(/^\-\-format=/, '');
   } else if (arg.match(/^\-\-template=/)) {
     template = arg.replace(/^\-\-template=/, '');
+  } else if (arg.match(/^\-\-gtoc=/)) {
+    gtocPath = arg.replace(/^\-\-gtoc=/, '');
   }
 })
 
@@ -70,7 +73,7 @@ function next(er, input) {
       break;
 
     case 'html':
-      require('./html.js')(input, inputFile, template, function(er, html) {
+      require('./html.js')(input, inputFile, template, gtocPath, function(er, html) {
         if (er) throw er;
         console.log(html);
       });
