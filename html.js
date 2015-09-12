@@ -26,19 +26,17 @@ var preprocess = require('./preprocess.js');
 
 module.exports = toHTML;
 
-// TODO(chrisdickinson): never stop vomitting / fix this.
-var gtocPath = path.resolve(path.join(__dirname, '..', '..', 'doc', 'api', '_toc.markdown'));
 var gtocLoading = null;
 var gtocData = null;
 
-function toHTML(input, filename, template, cb) {
+function toHTML(input, filename, template, gtocPath, cb) {
   if (gtocData) {
     return onGtocLoaded();
   }
 
   if (gtocLoading === null) {
     gtocLoading = [onGtocLoaded];
-    return loadGtoc(function(err, data) {
+    return loadGtoc(gtocPath, function(err, data) {
       if (err) throw err;
       gtocData = data;
       gtocLoading.forEach(function(xs) {
@@ -60,7 +58,7 @@ function toHTML(input, filename, template, cb) {
   }
 }
 
-function loadGtoc(cb) {
+function loadGtoc(gtocPath, cb) {
   fs.readFile(gtocPath, 'utf8', function(err, data) {
     if (err) return cb(err);
 
@@ -106,7 +104,7 @@ function render(lexed, filename, template, cb) {
 
     // content has to be the last thing we do with
     // the lexed tokens, because it's destructive.
-    content = marked.parser(lexed);
+    var content = marked.parser(lexed);
     template = template.replace(/__CONTENT__/g, content);
 
     cb(null, template);
